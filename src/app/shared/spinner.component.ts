@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  Inject,
-  ViewEncapsulation
-} from '@angular/core';
+import { Component, Input, OnDestroy, Inject, ViewEncapsulation } from '@angular/core';
 import {
   Router,
   NavigationStart,

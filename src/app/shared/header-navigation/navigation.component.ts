@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-//declare var $: any;
 
 @Component({
   selector: 'app-navigation',
@@ -11,5 +10,5 @@ export class NavigationComponent {
 
   public showSearch = false;
 
-  constructor() {}
+  constructor() { }
 }

@@ -5,7 +5,6 @@ import { Injectable } from '@angular/core';
     providedIn: 'root'
 })
 export class AttributesService {
-    
     constructor(private http: HttpClient) {
     }
 

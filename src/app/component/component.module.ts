@@ -16,8 +16,6 @@ import { ComponentsRoutes } from './component.routing';
     ReactiveFormsModule,
     NgbModule
   ],
-  declarations: [
-    
-  ]
+  declarations: []
 })
 export class ComponentsModule {}

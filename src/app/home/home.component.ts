@@ -1,6 +1,5 @@
 import { Component, AfterViewInit, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import * as XLSX from 'xlsx';
 import { AttributesModel } from '../models/attributes.model';
 import { CombatAttributesModel } from '../models/combatAttributes.model';
 import { SkillAttributesModel } from '../models/skillAttributes.model';
@@ -8,7 +7,6 @@ import { AttributesService } from '../services/attributes.service';
 import { CombatAttributeService } from '../services/combatAttribute.service';
 import { SkillAttributesService } from '../services/skillAttributes.service';
 import { RankEnums } from '../shared/Enums/ranks.enum';
-//declare var require: any;
 
 @Component({
   templateUrl: './home.component.html'
@@ -20,8 +18,8 @@ export class HomeComponent implements OnInit {
   attributes = Array<AttributesModel>();
   combatAttributes = Array<CombatAttributesModel>();
   skillAttributes = Array<SkillAttributesModel>();
-  skillAttributeName: string = "";
-  attribute: string = "";
+  skillAttributeName = '';
+  attribute = '';
 
   constructor(private attributesService: AttributesService, private combatAttributeService: CombatAttributeService,
     private skillAttributeService: SkillAttributesService, private fb: FormBuilder) {
@@ -30,7 +28,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.playerForm = this.fb.group({
-      characterName: ["Test Name"],
+      characterName: ['Test Name'],
       strength: [0],
       dexterity: [0],
       mind: [0],
@@ -47,86 +45,80 @@ export class HomeComponent implements OnInit {
     this.getCombatAttributes();
     this.getSkillAttributeService();
   }
-
-  //To Get All Attributes
+  // To Get All Attributes
   getAttributes() {
     this.attributesService.getAttributes().subscribe(x => {
       this.attributes = x as AttributesModel[];
     });
   }
-
-  //To Get All Combat Attributes
+  // To Get All Combat Attributes
   getCombatAttributes() {
     this.combatAttributeService.getCombatAttributes().subscribe(x => {
       this.combatAttributes = x as CombatAttributesModel[];
     });
   }
-
-  //To Get All Skill Attributes
+  // To Get All Skill Attributes
   getSkillAttributeService() {
     this.skillAttributeService.getSkillAttributes().subscribe(x => {
       this.skillAttributes = x as SkillAttributesModel[];
     });
   }
-
-  //Calculate Attribute Value And Set
+  // Calculate Attribute Value And Set
   calculateAttribute(event: any) {
-    switch (event.target.getAttribute("data-attributename")) {
-      case "strength":
-        this.playerForm.controls.vitality.setValue(3 + parseInt(event.target.value))
+    switch (event.target.getAttribute('data-attributename')) {
+      case 'strength':
+        this.playerForm.controls.vitality.setValue(3 + parseInt(event.target.value, 10));
         break;
-      case "dexterity":
-        var mind = this.playerForm.controls.mind.value;
-        var dexterity = parseInt(event.target.value);
-        this.playerForm.controls.evasion.setValue(10 + dexterity)
-        this.playerForm.controls.armor.setValue(10 + dexterity)
-        this.playerForm.controls.alacrity.setValue(parseInt(mind) + dexterity)
+      case 'dexterity':
+        const mind = this.playerForm.controls.mind.value;
+        const dexterity = parseInt(event.target.value, 10);
+        this.playerForm.controls.evasion.setValue(10 + dexterity);
+        this.playerForm.controls.armor.setValue(10 + dexterity);
+        this.playerForm.controls.alacrity.setValue(parseInt(mind, 10) + dexterity);
         break;
-      case "mind":
-        var dexterityMind = this.playerForm.controls.dexterity.value;
-        this.playerForm.controls.alacrity.setValue(parseInt(dexterityMind) + parseInt(event.target.value))
+      case 'mind':
+        const dexterityMind = this.playerForm.controls.dexterity.value;
+        this.playerForm.controls.alacrity.setValue(parseInt(dexterityMind, 10) + parseInt(event.target.value, 10));
         break;
-      case "presence":
-        this.playerForm.controls.tenacity.setValue(1 + parseInt(event.target.value))
+      case 'presence':
+        this.playerForm.controls.tenacity.setValue(1 + parseInt(event.target.value, 10));
         break;
     }
   }
-
-    //Calculate Skill Attribute Value And Set
+  // Calculate Skill Attribute Value And Set
   calculateSkillAttribute(event: any) {
-    this.attribute = event.target.getAttribute("data-attributename");
-    this.calculateSkillValue(this.attribute)
-    this.skillAttributeName = event.target.getAttribute("data-attributeName").toLowerCase()
+    this.attribute = event.target.getAttribute('data-attributename');
+    this.calculateSkillValue(this.attribute);
+    this.skillAttributeName = event.target.getAttribute('data-attributeName').toLowerCase();
   }
-
-  //Calculate Skill Attribute Value And Set
+  // Calculate Skill Attribute Value And Set
   calculateSkillValue(attribute: string) {
-    var value = 0;
+    let value = 0;
     switch (attribute) {
-      case "strength":
+      case 'strength':
         value = this.playerForm.controls.strength.value;
         break;
-      case "dexterity":
+      case 'dexterity':
         value = this.playerForm.controls.dexterity.value;
         break;
-      case "mind":
+      case 'mind':
         value = this.playerForm.controls.mind.value;
         break;
-      case "presence":
+      case 'presence':
         value = this.playerForm.controls.presence.value;
         break;
     }
-
-    var rank = this.getRank(value);
-    this.skillAttributes.forEach(x => {
-
-      if (x.attribute?.toLowerCase() == attribute) {
-        x.skills?.forEach(x => { x.rank = RankEnums[rank], x.value = this.getSkillValue(RankEnums[rank], parseInt(rank.toString())) })
+    const rank = this.getRank(value);
+    this.skillAttributes.forEach(skill => {
+      if (skill.attribute?.toLowerCase() === attribute) {
+        skill.skills?.forEach(skillData => {
+          skillData.rank = RankEnums[rank],
+            skillData.value = this.getSkillValue(RankEnums[rank], parseInt(rank.toString(), 10));
+        });
       }
-    })
+    });
   }
-
-  //Get Rank Value
+  // Get Rank Value
   getRank(value: any) {
     if (value >= 40 && value < 50) {
       return RankEnums.Expert;
@@ -145,11 +137,10 @@ export class HomeComponent implements OnInit {
             }
     return RankEnums.Master;
   }
-
-//Get Skill Random Value
+  // Get Skill Random Value
   getSkillValue(rankName: string, rank: number) {
-    var level = 0;
-    if (rankName == "Untrained") {
+    let level = 0;
+    if (rankName === 'Untrained') {
       level = Math.min(
         this.randomIntFromInterval(1, 20),
         this.randomIntFromInterval(1, 20)
@@ -159,36 +150,30 @@ export class HomeComponent implements OnInit {
     }
     return level;
   }
-
-  //Generate Random Number
-  randomIntFromInterval(min: number, max: number) { // min and max included 
+  // Generate Random Number
+  randomIntFromInterval(min: number, max: number) {
     return Math.floor(Math.random() * (max - min) + min);
   }
-
-  //Refresh Skill Attribute Value
+  // Refresh Skill Attribute Value
   RefreshSkillValue() {
-    this.calculateSkillValue(this.attribute)
+    this.calculateSkillValue(this.attribute);
   }
-
-  //Calculate Damage and Set vitality
+  // Calculate Damage and Set vitality
   calculateDamage() {
-    var strength = this.playerForm.controls.strength.value;
-    var vitality = strength + 3;
-    var damage = this.playerForm.controls.damage.value != null ? parseInt(this.playerForm.controls.damage.value) : vitality;
-    var finalVaule = parseInt(vitality) - damage;
+    const strength = this.playerForm.controls.strength.value;
+    const vitality = strength + 3;
+    const damage = this.playerForm.controls.damage.value != null ? parseInt(this.playerForm.controls.damage.value, 10) : vitality;
+    const finalVaule = parseInt(vitality, 10) - damage;
     this.playerForm.controls.vitality.setValue(finalVaule);
   }
-
-  //Export Attribute Value
+  // Export Attribute Value
   Export() {
     console.log(this.playerForm.value);
-    alert("Successfully data has exported.")
+    alert('Successfully data has exported.');
   }
-
-  //Import Attribute Value
+  // Import Attribute Value
   Import() {
-    alert("Successfully data has imported.")
+    alert('Successfully data has imported.');
     console.log(this.playerForm.value);
   }
-
 }
