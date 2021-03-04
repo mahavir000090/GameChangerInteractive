@@ -1,0 +1,109 @@
+<form [formGroup]="playerForm" novalidate autocomplete="off">
+    <div class="row">
+        <div class="col-12 m-t-30">
+            <h4 class="m-b-0">Player</h4>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Character Name</h3>
+                    <div class="card-text">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" formControlName="characterName"
+                                placeholder="Character Name">
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-default" (click)="Export()">Export</button>
+                            <button class="btn btn-default" (click)="Import()">Import</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 m-t-30">
+            <h4 class="m-b-0">Attributes</h4>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title"></h3>
+                    <div class="card-text">
+                        <div class="row">
+
+                            <div class="col-md-3" *ngFor="let data of attributes">
+                                <input type="radio" name="attribute" [attr.data-attributeName]="data.attributeName"
+                                    (change)="calculateSkillAttribute($event)" />
+                                {{data.attributeName}}
+                                <input type="number" class="form-control" min="0" value="0"
+                                    [formControlName]="data.attributeName"
+                                    [attr.data-attributeName]="data.attributeName"
+                                    (change)="calculateAttribute($event)" (keyup)="calculateAttribute($event)" />
+                            </div>
+                            <div class="col-md-3">
+                                Damage
+                                 <input type="number" class="form-control"  min="0" value="0"
+                                formControlName="damage" (change)="calculateAttribute($event)" (keyup)="calculateDamage()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 m-t-30">
+            <h4 class="m-b-0">Combat Attributes</h4>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title"></h3>
+                    <div class="card-text">
+                        <div class="row">
+                            <div class="col-md-3" *ngFor="let data of combatAttributes">
+                                {{data.attributeName}}                               
+                                <input type="number" class="form-control" min="0" value="0"
+                                    [formControlName]="data.attributeName" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 m-t-30">
+            <h4 class="m-b-0">Skills </h4>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title" *ngIf="skillAttributeName"><button class="btn btn-default" (click)="RefreshSkillValue()">Refresh</button></h3>
+                    <div class="card-text">
+                        <div class="row" *ngFor="let data of skillAttributes">
+                            <div class="col-md-3">
+                                <div *ngIf="skillAttributeName == data.attribute.toLowerCase()">
+                                    {{data.attribute}}
+                                    <br />
+                                    <span>Skill:</span>
+                                    <table class="table">
+                                        <tr *ngFor="let s of data.skills">
+                                            <td>{{s.name}}</td>
+                                            <td>{{s.rank}}</td>
+                                            <td>{{s.value}}</td>
+                                        </tr>
+                                    </table>                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
